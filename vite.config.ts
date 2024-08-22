@@ -12,17 +12,22 @@ import { resolve } from "path"
 import minimist from 'minimist';
 import fs from 'fs'
 
-const args = minimist(process.argv.slice(2))
+// 需要调整为本地的配置
+const PLUGIN_NAME = "siyuan-Mtask"
 const SIYUAN_WORKSPACE = "E:/siyuan"
+const DEV_DIST_FILENAME = "dist-dev"
+
+
+const args = minimist(process.argv.slice(2))
 const isDev = args.d || false
 const isLink = args.l || false
-const distDir = isDev ? "dist-dev" : "dist"
+const distDir = isDev ? DEV_DIST_FILENAME : "dist"
 
 if (isLink) {
   // 获取当前文件目录
-  const currentPath = `${process.cwd()}/dist-dev`;
+  const currentPath = `${process.cwd()}/${DEV_DIST_FILENAME}`;
   // 目标插件目录
-  const targetPath = `${SIYUAN_WORKSPACE}/data/plugins/siyuan-Mtask`
+  const targetPath = `${SIYUAN_WORKSPACE}/data/plugins/${PLUGIN_NAME}`
   if (!fs.existsSync(targetPath)) {
     if (!fs.existsSync(currentPath)) {
       fs.mkdirSync(currentPath, { recursive: true });
