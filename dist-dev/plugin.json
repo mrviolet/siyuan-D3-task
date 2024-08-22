@@ -1,0 +1,38 @@
+{
+  "name": "siyuan-Mtask",
+  "author": "li.mian",
+  "url": "https://github.com/d3-double3/siyuan-Mtask.git",
+  "version": "0.0.1",
+  "minAppVersion": "3.1.3",
+  "backends": [
+    "all"
+  ],
+  "frontends": [
+    "all"
+  ],
+  "displayName": {
+    "en_US": "Mtask",
+    "zh_CN": "Mtask"
+  },
+  "description": {
+    "en_US": "Mtask, manage my task",
+    "zh_CN": "Mtask, 管理我的任务"
+  },
+  "readme": {
+    "en_US": "README.md",
+    "zh_CN": "README_zh_CN.md"
+  },
+  "funding": {
+    "custom": [
+      ""
+    ]
+  },
+  "keywords": [
+    "task",
+    "todo",
+    "work",
+    "任务",
+    "待办",
+    "工作"
+  ]
+}
