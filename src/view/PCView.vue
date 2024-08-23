@@ -3,18 +3,22 @@
  * @Date: 2024-08-23
  * @LastEditors: yl_li
  * @LastEditTime: 2024-08-23
- * @description: 插件主页面
+ * @description: 
 -->
 <template>
-  <div class="d3-mt">
-    <PCView></PCView>
+  <div class="mt">
+    <div>
+      <span>Mtask</span>
+    </div>
+    电脑端界面
+    <p class="overline">The quic1111k brown fox ...</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import PCView from './view/PCView.vue';
+
 </script>
 
-<style scoped lang="scss">
+<style lang="css">
 
 </style>

@@ -9,7 +9,7 @@
 import { Plugin } from 'siyuan'
 import App from './App.vue'
 import { createApp } from 'vue'
-
+import './style.css';
 const app = () => createApp(App)
 
 export default class MtaskPlugin extends Plugin {
