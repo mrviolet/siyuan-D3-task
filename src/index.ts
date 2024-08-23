@@ -6,7 +6,7 @@
  * @description: 
  */
 
-import { Plugin, Menu } from 'siyuan'
+import { Plugin } from 'siyuan'
 import App from './App.vue'
 import { createApp } from 'vue'
 
@@ -26,12 +26,9 @@ export default class MtaskPlugin extends Plugin {
       data: {},
       type: 'dock_tab',
       async init() {
-        // 添加id
         this.element.id = 'siyuan-mtask'
         this.element.style.height = '100%'
-        setTimeout(() => {
-          app().mount(this.element)
-        }, 100)
+        app().mount('#siyuan-mtask')
       },
       destroy() {
         console.log('destroy dock: dock_tab')
