@@ -2,8 +2,23 @@
  * @Author: yl_li
  * @Date: 2024-08-20
  * @LastEditors: yl_li
- * @LastEditTime: 2024-08-23
- * @description: 
+ * @LastEditTime: 2024-08-29
+ * @description: 样式文件
  */
+@import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+/* 
+ * 覆盖 tailwindcss/base 中的 box-sizing 属性, 并在 d3-mk 中恢复
+ * 避免影响主程序样式
+ */
+@layer base {
+  * {
+    box-sizing: unset;
+  }
+
+  .d3-mk {
+    box-sizing: border-box;
+  }
+}

@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-08-20
  * @LastEditors: yl_li
- * @LastEditTime: 2024-08-23
+ * @LastEditTime: 2024-08-28
  * @description: 
  */
 
@@ -10,7 +10,7 @@ import { Plugin } from 'siyuan'
 import App from './App.vue'
 import { createApp } from 'vue'
 import './style.css';
-const app = () => createApp(App)
+const app = createApp(App)
 
 export default class MtaskPlugin extends Plugin {
 
@@ -28,7 +28,7 @@ export default class MtaskPlugin extends Plugin {
       async init() {
         this.element.id = 'siyuan-mtask'
         this.element.style.height = '100%'
-        app().mount('#siyuan-mtask')
+        app.mount('#siyuan-mtask')
       },
       destroy() {
         console.log('destroy dock: dock_tab')
