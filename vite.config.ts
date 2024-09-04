@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-08-20
  * @LastEditors: yl_li
- * @LastEditTime: 2024-08-23
+ * @LastEditTime: 2024-08-30
  * @description: 
  */
 import { defineConfig } from 'vite'
@@ -71,6 +71,10 @@ export default defineConfig({
       fileName: () => 'index.js',
       formats: ['cjs'],
     },
+    watch: {
+      include: 'src/**', // 监控 src 目录下的文件变化
+      exclude: ['node_modules/**', 'dist/**'], // 排除 node_modules 目录
+    },
     rollupOptions: {
       external: ["siyuan", "process"],
       output: {
@@ -82,6 +86,17 @@ export default defineConfig({
           return String(assetInfo.name)
         },
       },
+      plugins: [
+        {
+          name: 'code-watch',
+          buildStart() {
+            console.log('Watching for file changes...');
+          },
+          async writeBundle() {
+            console.log('Files have been updated.');
+          },
+        },
+      ],
     }
   },
 })
