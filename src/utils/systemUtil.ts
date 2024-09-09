@@ -21,6 +21,7 @@ function closeDock() {
  */
 function openMtaskTab() {
   window.mtaskPluginInstance.openMtaskTab()
+  closeDock()
 }
 
 export { closeDock, openMtaskTab }

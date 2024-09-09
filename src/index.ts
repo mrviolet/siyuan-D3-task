@@ -2,11 +2,12 @@
  * @Author: yl_li
  * @Date: 2024-08-20
  * @LastEditors: yl_li
- * @LastEditTime: 2024-09-04
+ * @LastEditTime: 2024-09-05
  * @description: 
  */
 
 import './style.css';
+import '@icon-park/vue-next/styles/index.css'
 import { Plugin, openTab } from 'siyuan'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
