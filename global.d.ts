@@ -11,4 +11,12 @@ declare global {
   interface Window {
     mtaskPluginInstance: any
   }
+
+  interface Nav {
+    id: string,
+    label: string,
+    path: string,
+    notebook: string,
+    child?: Nav[]
+  } 
 }

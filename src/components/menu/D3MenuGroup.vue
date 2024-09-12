@@ -2,34 +2,35 @@
  * @Author: yl_li
  * @Date: 2024-09-09
  * @LastEditors: yl_li
- * @LastEditTime: 2024-09-09
+ * @LastEditTime: 2024-09-11
  * @description: 
 -->
 <template>
-  <div>
+  <div v-for="nav in navs" :key="nav.id">
     <div class="rounded-lg cursor-pointer hover:bg-[#f4f7fc] p-1.5 pl-3 grid grid-cols-nav-i gap-x-1.5">
-      <IconComponent @click="toggleChildVisibility" />
-      <span class="self-center">{{ lable }}</span>
+      <IconComponent :nav="nav" @click="toggleChildVisibility(nav)" />
+      <span class="self-center">{{ nav.label }}</span>
     </div>
-    <D3MenuGroup class="pl-3" v-if="isChildVisible && child && child.length"
-      v-for="(item, index) in child" :key="index" :lable="item.label" :child="item.child" />
+    <div class="pl-3">
+      <D3MenuGroup v-if="isChildVisible[nav.id] && nav.child && nav.child.length" :navs="nav.child" />
+    </div>
   </div>
 </template>
 <script setup lang="ts">
 import { h, ref } from 'vue';
 import { RightSquare, DownSquare, Round } from '@icon-park/vue-next'
+import { getFileTree } from '../../api/MtaskApi';
 
 const props = defineProps<{
-  lable: string,
-  child?: any[]
+  navs: Nav[]
 }>();
 
-const isChildVisible = ref(false);
-
-const IconComponent = () => {
-  if (props.child && props.child.length > 0) {
+const isChildVisible = ref<Record<string, boolean>>({});
+const emitHandler = defineEmits(['showChild']);
+const IconComponent = (props: { nav: Nav }) => {
+  if (props.nav.child) {
     return h(
-      isChildVisible.value ? DownSquare : RightSquare, {
+      isChildVisible.value[props.nav.id] ? DownSquare : RightSquare, {
       class: ['self-center', 'p-0.5', 'rounded-sm', 'hover:bg-[#d1e2ff]'],
       theme: 'outline',
       size: '14',
@@ -46,8 +47,24 @@ const IconComponent = () => {
   }
 }
 
-function toggleChildVisibility() {
-  isChildVisible.value = !isChildVisible.value;
+function toggleChildVisibility(nav: Nav) {
+  isChildVisible.value[nav.id] = !isChildVisible.value[nav.id];
+  getFileTree({ path: nav.path, notebook: nav.notebook }).then(res => {
+    if (res.length != 0) {
+      nav.child = res.map((item: { id: string, name: string, path: string}) => {
+        return {
+          id: item.id,
+          label: item.name.replace('.sy', ""),
+          path: item.path,
+          notebook: nav.notebook,
+          child: []
+        }
+      })
+    } else {
+      nav.child = undefined;
+    }
+  })
+
 }
 
 </script>
