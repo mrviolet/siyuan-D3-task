@@ -23,7 +23,7 @@ import { getFileTree } from '../../api/MtaskApi';
 
 const emitHandler = defineEmits(['clickNav']);
 
-defineProps<{
+const props = defineProps<{
   navs: Nav[],
   level: number
 }>();
@@ -69,7 +69,7 @@ function toggleChildVisibility(nav: Nav) {
 }
 
 function clickNav(navid: string) { 
-  emitHandler('clickNav', navid)
+  emitHandler('clickNav', {navid, level:props.level})
 }
 
 </script>

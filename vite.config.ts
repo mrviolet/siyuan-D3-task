@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-08-20
  * @LastEditors: yl_li
- * @LastEditTime: 2024-08-30
+ * @LastEditTime: 2024-10-21
  * @description: 
  */
 import { defineConfig } from 'vite'
@@ -16,6 +16,7 @@ import fs from 'fs'
 const PLUGIN_NAME = "siyuan-Mtask"
 const SIYUAN_WORKSPACE = "E:/siyuan"
 const DEV_DIST_FILENAME = "dist-dev"
+const BASRE_URL = "http://127.0.0.1:64337/"
 
 
 const args = minimist(process.argv.slice(2))
@@ -94,6 +95,18 @@ export default defineConfig({
           },
           async writeBundle() {
             console.log('Files have been updated.');
+            // 刷新文档树
+            // 发送 post 请求 /api/filetree/refreshFiletree
+            await fetch(BASRE_URL + 'api/filetree/refreshFiletree', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                "notebook": "root",
+                "path": "/"
+              }),
+            });
           },
         },
       ],
