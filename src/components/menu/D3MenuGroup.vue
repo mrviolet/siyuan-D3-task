@@ -2,17 +2,17 @@
  * @Author: yl_li
  * @Date: 2024-09-09
  * @LastEditors: yl_li
- * @LastEditTime: 2024-09-11
- * @description: 
+ * @LastEditTime: 2024-10-21
+ * @description: 循环的菜单, level 用于显示层级, 0级为笔记本, 1级及之后是文档
 -->
 <template>
-  <div v-for="nav in navs" :key="nav.id">
-    <div class="rounded-lg cursor-pointer hover:bg-[#f4f7fc] p-1.5 pl-3 grid grid-cols-nav-i gap-x-1.5">
-      <IconComponent :nav="nav" @click="toggleChildVisibility(nav)" />
-      <span class="self-center">{{ nav.label }}</span>
-    </div>
-    <div class="pl-3">
-      <D3MenuGroup v-if="isChildVisible[nav.id] && nav.child && nav.child.length" :navs="nav.child" />
+  <div>
+    <div v-for="nav in navs" :key="nav.id">
+      <div class="rounded-lg cursor-pointer hover:bg-[#f4f7fc] p-1.5 pl-3 grid grid-cols-nav-i gap-x-1.5" :style="{paddingLeft: (level + 0.75) + 'rem'}">
+        <IconComponent :nav="nav" @click="toggleChildVisibility(nav)" />
+        <span class="self-center" @click="clickNav(nav.id)">{{ nav.label }}</span>
+      </div>
+      <D3MenuGroup v-if="isChildVisible[nav.id] && nav.child && nav.child.length" :navs="nav.child" :level="level + 1" @clickNav="clickNav" />
     </div>
   </div>
 </template>
@@ -21,12 +21,14 @@ import { h, ref } from 'vue';
 import { RightSquare, DownSquare, Round } from '@icon-park/vue-next'
 import { getFileTree } from '../../api/MtaskApi';
 
-const props = defineProps<{
-  navs: Nav[]
+const emitHandler = defineEmits(['clickNav']);
+
+defineProps<{
+  navs: Nav[],
+  level: number
 }>();
 
 const isChildVisible = ref<Record<string, boolean>>({});
-const emitHandler = defineEmits(['showChild']);
 const IconComponent = (props: { nav: Nav }) => {
   if (props.nav.child) {
     return h(
@@ -64,7 +66,10 @@ function toggleChildVisibility(nav: Nav) {
       nav.child = undefined;
     }
   })
+}
 
+function clickNav(navid: string) { 
+  emitHandler('clickNav', navid)
 }
 
 </script>
