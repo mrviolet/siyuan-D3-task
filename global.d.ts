@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-09-04
  * @LastEditors: yl_li
- * @LastEditTime: 2024-09-14
+ * @LastEditTime: 2024-10-21
  * @description: 
  */
 export {};
@@ -33,4 +33,11 @@ declare global {
     hpath: string, // 可读的笔记本路径
   }
 
+  /**
+   * 待办事项筛选条件
+   */
+  interface TodoFilter {
+    status?: 'all' | 'finished' | 'unfinished',
+  }
+  
 }

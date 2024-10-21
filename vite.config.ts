@@ -96,7 +96,6 @@ export default defineConfig({
           async writeBundle() {
             console.log('Files have been updated.');
             // 刷新文档树
-            // 发送 post 请求 /api/filetree/refreshFiletree
             await fetch(BASRE_URL + 'api/filetree/refreshFiletree', {
               method: 'POST',
               headers: {
@@ -107,6 +106,7 @@ export default defineConfig({
                 "path": "/"
               }),
             });
+            console.log('Refresh file tree completed.');
           },
         },
       ],

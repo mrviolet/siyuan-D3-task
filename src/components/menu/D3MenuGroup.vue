@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-09-09
  * @LastEditors: yl_li
- * @LastEditTime: 2024-10-21
+ * @LastEditTime: 2024-10-22
  * @description: 循环的菜单, level 用于显示层级, 0级为笔记本, 1级及之后是文档
 -->
 <template>
@@ -68,8 +68,21 @@ function toggleChildVisibility(nav: Nav) {
   })
 }
 
-function clickNav(navid: string) { 
-  emitHandler('clickNav', {navid, level:props.level})
+/**
+ * 点击导航项时的处理函数
+ * 
+ * @param {string} navid - 被点击导航项的ID
+ * 说明:
+ * - 该函数会在点击特定导航项时被触发
+ * - 通过 emitHandler 触发名为 'clickNav' 的自定义事件，并传递当前点击的导航项ID和导航级别
+ * - 导航级别的信息通过 defineProps.level 获取，这是在组件中定义的属性
+ */
+function clickNav(param: any) {
+  let emitParam = param
+  if(!param.level) {
+    emitParam = {navid:param, level:props.level}
+  }
+  emitHandler('clickNav', emitParam)
 }
 
 </script>

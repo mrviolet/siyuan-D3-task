@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-08-23
  * @LastEditors: yl_li
- * @LastEditTime: 2024-10-21
+ * @LastEditTime: 2024-10-22
  * @description: 任务管理主页面
 -->
 <template>
@@ -26,7 +26,7 @@
       </div>
       <!-- 中间工作区 -->
       <div class="flex-auto w-64 bg-white rounded-lg">
-        02
+        <TodoList :list="todoList" />
       </div>
       <!-- 右侧编辑区 -->
       <div class="flex-auto w-22 bg-white rounded-lg">
@@ -39,12 +39,14 @@
 <script setup lang="ts">
 import D3MenuItem from '../components/menu/D3MenuItem.vue';
 import D3MenuGroup from '../components/menu/D3MenuGroup.vue';
+import TodoList from './TodoList.vue';
 
 import { AllApplication, CheckCorrect, Plan } from '@icon-park/vue-next'
-import { getOpenNotebookList } from '../api/MtaskApi';
+import { getOpenNotebookList, getTodosByBoxid, getTodosByDocid } from '../api/MtaskApi';
 import { ref } from 'vue';
 
-let navList = ref<Nav[]>([])
+const navList = ref<Nav[]>([])
+const todoList = ref<Todo[]>([])
 
 // 获取笔记本列表
 getOpenNotebookList().then(res => {
@@ -59,12 +61,18 @@ getOpenNotebookList().then(res => {
   })
 })
 
-function openWorkspeace(id: string) {
-  console.log(id + " :: 被点击");
-  
-  // getTodosLikeId(id).then(res => {
-  //   console.log(res)
-  // })
+function openWorkspeace(param: {navid:string, level:number}) {
+  if(param.level === 0) {
+    // 获取笔记本下所有 todo
+    getTodosByBoxid(param.navid).then(res => {
+      todoList.value = res
+    })
+  }else{
+    // 获取文档下所有 todo
+    getTodosByDocid(param.navid).then(res => {
+      todoList.value = res
+    })
+  }
 }
 </script>
 

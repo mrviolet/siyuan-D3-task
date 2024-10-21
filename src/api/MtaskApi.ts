@@ -2,12 +2,11 @@
  * @Author: yl_li
  * @Date: 2024-09-10
  * @LastEditors: yl_li
- * @LastEditTime: 2024-09-19
+ * @LastEditTime: 2024-10-22
  * @description: 根据 suyuan-api 封装好的, 适配插件的 api
  */
 import { formatTodo } from "../utils/entityUtil";
 import { send } from "./SiyuanApi";
-
 
 /**
  * 获取打开的笔记本列表
@@ -38,25 +37,40 @@ export async function getFileTree(param: { notebook: string, path: string }) {
   return [];
 }
 
-// /** 
-//  * 查询和此ID有关的所有 todo
-//  * 先查询笔记本下的所有 todo，再查询块下的所有 todo
-// */
-// export async function getTodosLikeId(selectedID: string, showFinished: boolean = false) {
-//   if (!selectedID) return [];
-//   let queryNTodoSql = `SELECT * FROM blocks WHERE box = '${selectedID}' and type = 'i' and subtype='t'`
-//   if (!showFinished) {
-//     queryNTodoSql += " and markdown like '%[ ]%'"
-//   }
-//   const nTodoRes = await send('sql', { stmt: queryNTodoSql });
-//   if (nTodoRes.data.length != 0) {
-//     return nTodoRes.data.map((d: any) => formatTodo(d));
-//   } else {
-//     let queryBlockTodoSql = `SELECT * FROM blocks WHERE path like '%${selectedID}%' and type = 'i' and subtype='t'`
-//     if (!showFinished) {
-//       queryBlockTodoSql += " and markdown like '%[ ]%'"
-//     }
-//     const bTodoRes = await send('sql', { stmt: queryBlockTodoSql });
-//     return bTodoRes.data.map((d: any) => formatTodo(d));
-//   }
-// }
+
+/**
+ * 根据笔记本 id 查询 todo, 默认仅显示已完成的
+ * @param boxid 笔记本 ID
+ * @param filter 筛选条件, 默认为只显示未完成的
+ * @returns 
+ */
+export async function getTodosByBoxid(boxid: string, filter: TodoFilter = { status: 'unfinished' }) {
+  if (!boxid) return [];
+  let queryTodoSql = `SELECT * FROM blocks WHERE type = 'i' AND subtype = 't' AND box = '${boxid}'`
+  if (filter.status == 'unfinished') {
+    queryTodoSql += " and markdown like '* [ ]%'"
+  } else if (filter.status == 'finished') {
+    queryTodoSql += " and markdown like '* [x]%'"
+  }
+  const todoRes = await send('sql', { stmt: queryTodoSql });
+  return todoRes.data.map((d: any) => formatTodo(d));
+}
+
+
+/**
+ * 根据文档 id 查询 todo, 默认仅显示已完成的
+ * @param boxid 笔记本 ID
+ * @param showFinished 是否显示已完成, 默认为 false 不展示 
+ * @returns 
+ */
+export async function getTodosByDocid(docid: string, filter: TodoFilter = { status: 'unfinished' }) {
+  if (!docid) return [];
+  let queryTodoSql = `SELECT * FROM blocks WHERE type = 'i' AND subtype = 't' AND path like '%${docid}%'`
+  if (filter.status == 'unfinished') {
+    queryTodoSql += " and markdown like '* [ ]%'"
+  } else if (filter.status == 'finished') {
+    queryTodoSql += " and markdown like '* [x]%'"
+  }
+  const todoRes = await send('sql', { stmt: queryTodoSql });
+  return todoRes.data.map((d: any) => formatTodo(d));
+}

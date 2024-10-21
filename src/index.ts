@@ -12,7 +12,7 @@ import { Plugin, openTab } from 'siyuan'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import DockView from './view/Dock.vue'
-import ManageView from './view/Manage.vue'
+import MainView from './view/Main.vue'
 const dockView = createApp(DockView).use(createPinia())
 
 export default class MtaskPlugin extends Plugin {
@@ -46,7 +46,7 @@ export default class MtaskPlugin extends Plugin {
     this.addTab({
       type: tagId,
       init() {
-        createApp(ManageView).use(createPinia()).mount(this.element);
+        createApp(MainView).use(createPinia()).mount(this.element);
       }
     })
     openTab({
