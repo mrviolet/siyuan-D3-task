@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-08-23
  * @LastEditors: yl_li
- * @LastEditTime: 2024-10-22
+ * @LastEditTime: 2024-10-23
  * @description: 任务管理主页面
 -->
 <template>
@@ -25,8 +25,9 @@
         </div>
       </div>
       <!-- 中间工作区 -->
-      <div class="flex-auto w-64 bg-white rounded-lg">
-        <TodoList :list="todoList" />
+      <div class="flex-auto w-64 p-4 pr-2 bg-white rounded-lg">
+        <div>32131231</div>
+        <TodoList class="h-full w-full flex flex-col overflow-y-auto" :list="todoList" />
       </div>
       <!-- 右侧编辑区 -->
       <div class="flex-auto w-22 bg-white rounded-lg">
@@ -37,47 +38,47 @@
 </template>
 
 <script setup lang="ts">
-import D3MenuItem from '../components/menu/D3MenuItem.vue';
-import D3MenuGroup from '../components/menu/D3MenuGroup.vue';
-import TodoList from './TodoList.vue';
+  import D3MenuItem from '../components/menu/D3MenuItem.vue';
+  import D3MenuGroup from '../components/menu/D3MenuGroup.vue';
+  import TodoList from './TodoList.vue';
 
-import { AllApplication, CheckCorrect, Plan } from '@icon-park/vue-next'
-import { getOpenNotebookList, getTodosByBoxid, getTodosByDocid } from '../api/MtaskApi';
-import { ref } from 'vue';
+  import { AllApplication, CheckCorrect, Plan } from '@icon-park/vue-next'
+  import { getOpenNotebookList, getTodosByBoxid, getTodosByDocid } from '../api/MtaskApi';
+  import { ref } from 'vue';
 
-const navList = ref<Nav[]>([])
-const todoList = ref<Todo[]>([])
+  const navList = ref<Nav[]>([])
+  const todoList = ref<Todo[]>([])
 
-// 获取笔记本列表
-getOpenNotebookList().then(res => {
-  navList.value = res.map((item: { name: string; id: string; closed: boolean }):Nav => {
-    return {
-      label: item.name,
-      id: item.id,
-      child: [],
-      notebook:item.id,
-      path: '/'
-    }
+  // 获取笔记本列表
+  getOpenNotebookList().then(res => {
+    navList.value = res.map((item: { name: string; id: string; closed: boolean }): Nav => {
+      return {
+        label: item.name,
+        id: item.id,
+        child: [],
+        notebook: item.id,
+        path: '/'
+      }
+    })
   })
-})
 
-function openWorkspeace(param: {navid:string, level:number}) {
-  if(param.level === 0) {
-    // 获取笔记本下所有 todo
-    getTodosByBoxid(param.navid).then(res => {
-      todoList.value = res
-    })
-  }else{
-    // 获取文档下所有 todo
-    getTodosByDocid(param.navid).then(res => {
-      todoList.value = res
-    })
+  function openWorkspeace(param: { navid: string, level: number }) {
+    if (param.level === 0) {
+      // 获取笔记本下所有 todo
+      getTodosByBoxid(param.navid).then(res => {
+        todoList.value = res
+      })
+    } else {
+      // 获取文档下所有 todo
+      getTodosByDocid(param.navid).then(res => {
+        todoList.value = res
+      })
+    }
   }
-}
 </script>
 
 <style lang="css">
-.mt-manage-base svg {
-  fill: none;
-}
+  .mt-manage-base svg {
+    fill: none;
+  }
 </style>
