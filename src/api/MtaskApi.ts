@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-09-10
  * @LastEditors: yl_li
- * @LastEditTime: 2024-10-22
+ * @LastEditTime: 2024-11-06
  * @description: 根据 suyuan-api 封装好的, 适配插件的 api
  */
 import { formatTodo } from "../utils/entityUtil";
@@ -73,4 +73,16 @@ export async function getTodosByDocid(docid: string, filter: TodoFilter = { stat
   }
   const todoRes = await send('sql', { stmt: queryTodoSql });
   return todoRes.data.map((d: any) => formatTodo(d));
+}
+
+/**
+ * 查询块的信息根据 block id
+ * @param blockid block id
+ * @returns 块信息，使用 Todo 进行包装
+ */
+export async function queryBlockById(blockid: string) {
+  let queryBlockSql = `SELECT * FROM blocks WHERE id = '${blockid}'`
+  const blockRes = await send('sql', { stmt: queryBlockSql });
+  if (!blockRes.data) return null;
+  return blockRes.data.map((d: any) => formatTodo(d))[0];
 }
