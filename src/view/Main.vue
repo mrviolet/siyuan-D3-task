@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-08-23
  * @LastEditors: yl_li
- * @LastEditTime: 2024-11-07
+ * @LastEditTime: 2024-11-27
  * @description: 任务管理主页面
 -->
 <template>
@@ -21,11 +21,11 @@
         <div class="font-bold border-t border-slate-400 mx-3 pt-4 mt-4 mb-2">文档树</div>
         <!-- 导航组 -->
         <div class="overflow-y-auto mb-4">
-          <D3MenuGroup class="grid gap-y-1 border-t" :navs="navList" :level=0 @clickNav="openWorkspeace" />
+          <D3MenuGroup class="grid border-t" :navs="navList" :level=0 @clickNav="openWorkspeace" />
         </div>
       </div>
       <!-- 中间工作区 -->
-      <div class="flex-auto w-64 p-4 pr-2 bg-white rounded-lg">
+      <div class="flex-1 w-64 p-4 pr-2 bg-white rounded-lg">
         <!-- 文档标题 -->
         <div class="h-[44px]">
           <div class="font-bold mb-2 text-xl">
@@ -37,11 +37,18 @@
         </div>
         <!-- 待办列表 -->
         <TodoList style="height: calc(100% - 44px)" class="w-full flex flex-col overflow-y-auto" :list="todoList"
-          @selected="pickTodo" />
+          @pick="pickTodo" />
       </div>
       <!-- 右侧编辑区 -->
-      <div class="flex-auto w-22 bg-white rounded-lg">
-        <TodoEdit :todo="editTodo" />
+      <div class="flex-1 w-22 flex flex-col">
+        <!-- 任务内容编辑 -->
+        <div class="bg-white rounded-lg p-4 pb-2 flex-grow max-h-[90%]">
+          <TodoEdit :todo="editTodo" />
+        </div>
+        <!-- 任务时间线 -->
+        <div class="bg-white rounded-lg mt-2 max-h-[50%] p-4 pr-2">
+          <TimeLine class="h-full" />
+        </div>
       </div>
     </div>
   </div>
@@ -52,17 +59,22 @@
   import D3MenuGroup from '../components/menu/D3MenuGroup.vue';
   import TodoList from './TodoList.vue';
   import TodoEdit from './TodoEdit.vue';
+  import TimeLine from '../components/todo/TimeLine.vue';
 
+  import { useTodoStore } from '../stores/mtask';
   import { useNavStore } from '../stores/mtask';
   import { AllApplication, CheckCorrect, Plan } from '@icon-park/vue-next'
-  import { getOpenNotebookList, getTodosByBoxid, getTodosByDocid } from '../api/MtaskApi';
+  import { getOpenNotebookList } from '../api/MtaskApi';
+  import { getTodosByBoxid, getTodosByDocid } from '../api/QueryTodoApi';
   import { ref, computed } from 'vue';
 
   const navList = ref<Nav[]>([])
   const todoList = ref<Todo[]>([])
-  const editTodo = ref<Todo>({blockId: '', hpath: '', content: '', isFinished: false})
+  const editTodo = ref<Todo>({ blockId: '', hpath: '', content: '', isFinished: false })
   const navTitle = ref<string>('今天')
   const navSelected = useNavStore();
+  const todoSelected = useTodoStore();
+
   const todoTitle = computed(() => {
     // 根据 / 分割字符串
     return navTitle.value.split('/')
@@ -90,7 +102,7 @@
         todoList.value = res
       })
     } else if (param.level === -1) {
-
+      todoList.value = []
     } else {
       // 获取文档下所有 todo
       getTodosByDocid(param.navid).then(res => {
@@ -99,8 +111,20 @@
     }
   }
 
-  function pickTodo(todo: Todo) {
-    editTodo.value = todo
+  /**
+   * 当 todo list 中的 item 被点击时
+   * 1、将 todo id 传递给 store, 作为被选中的 todo
+   * 2、根据 block id 遍历 todo list, 设置 editTodo 为当前被选中的 todo
+   * @param blockId todo id
+   */
+  function pickTodo(blockId: string) {
+    todoSelected.change(blockId)
+    for (let todo of todoList.value) {
+      if (todo.blockId === blockId) {
+        editTodo.value = todo
+        break
+      }
+    }
   }
 </script>
 

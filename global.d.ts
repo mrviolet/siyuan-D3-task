@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-09-04
  * @LastEditors: yl_li
- * @LastEditTime: 2024-10-21
+ * @LastEditTime: 2024-11-26
  * @description: 
  */
 export {};
@@ -31,13 +31,14 @@ declare global {
     content: string,
     isFinished: boolean,
     hpath: string, // 可读的笔记本路径
+    planTime?: Date,
   }
 
   /**
    * 待办事项筛选条件
    */
   interface TodoFilter {
-    status?: 'all' | 'finished' | 'unfinished',
+    state?: 'all' | 'finished' | 'unfinished',
   }
   
 }

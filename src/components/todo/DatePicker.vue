@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-11-06
  * @LastEditors: yl_li
- * @LastEditTime: 2024-11-11
+ * @LastEditTime: 2024-11-27
  * @description: 日期选择器, 基于 vue-datepicker 实现，使用 date-fns 汉化
 -->
 <template>
@@ -23,7 +23,7 @@
       <template #trigger>
         <span class="clickable-text" :style="warningStyle">
           <CalendarThree class="mr-2" theme="outline" />
-          <span>{{ dateStr }}{{ dateMesage }}</span>
+          <span :class="!modelValue ? 'text-slate-400': ''">{{ dateStr }}{{ dateMesage }}</span>
         </span>
       </template>
     </VueDatePicker>
@@ -35,9 +35,8 @@
   import VueDatePicker from '@vuepic/vue-datepicker';
   import { zhCN } from 'date-fns/locale';
   import { format, differenceInCalendarDays } from 'date-fns';
-
-  import { computed } from 'vue';
   import { CalendarThree, Left, Right } from '@icon-park/vue-next'
+  import { computed } from 'vue';
 
   const props = defineProps<{
     modelValue: Date,
@@ -89,7 +88,7 @@
     }
     const now = new Date();
     if (differenceInCalendarDays(props.modelValue, now) < 0) {
-      return { color: '#e13e39', fontWeight: '500' }
+      return { color: '#e11d48', fontWeight: '500' }
     }
   })
 </script>
