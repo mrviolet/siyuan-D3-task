@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-10-22
  * @LastEditors: yl_li
- * @LastEditTime: 2024-11-26
+ * @LastEditTime: 2024-12-04
  * @description: 任务列表，暴漏两个事件，selected 和 change
  * 1、changed - 当 todo 的完成状态发生变化时触发, 参数1为 block id, 参数2为 true 或 false
  * 2、pick - 当 todo 被选中时触发, 参数为 block id
@@ -32,7 +32,7 @@
   }>();
 
 
-  function changeTodoState(param: { blockid: string, state: boolean }) {
+  function changeTodoState(param: any) {
     eventHandler('changed', param)
   }
 

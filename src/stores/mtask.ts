@@ -4,11 +4,13 @@ import { defineStore } from 'pinia'
  * 侧边栏选择
  */
 export const useNavStore = defineStore('navSelectId', {
-  state: () => ({blockId: 'today'}),
+  state: () => ({ navid: 'today', level: -1, label: '今天'}),
   getters: {},
   actions: {
-    change(newId:string) {
-      this.blockId = newId;
+    change(param:{ navid: string, level: number, label: string }) {
+      this.navid = param.navid;
+      this.level = param.level;
+      this.label = param.label;
     }
   },
 })

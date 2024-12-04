@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-09-10
  * @LastEditors: yl_li
- * @LastEditTime: 2024-11-26
+ * @LastEditTime: 2024-12-01
  * @description: 根据 suyuan-api 封装好的, 适配插件的 api
  */
 import { send } from "./SiyuanApi";
@@ -43,7 +43,42 @@ export async function getFileTree(param: { notebook: string, path: string }) {
  * @param msg 消息
  * @returns 
  */
-export async function pushMsg(msg: string){
+export async function pushMsg(msg: string) {
   // timeout：消息持续显示时间，单位为毫秒。可以不传入该字段，默认为 7000 毫秒
   return await send('pushMsg', { msg, "timeout": 2000 });
-} 
+}
+
+/** 
+ * 根据 block id 获取 dom
+ * @param blockId block id
+*/
+export async function getDomByBlockId(blockId: string) {
+  return await send('getDom', { id: blockId });
+}
+
+/**
+ * 根据 block id 编辑 block 内容, 使用 markdown 语法
+ */
+export async function editBlockMkByBlockId(blockId: string, content: string) {
+  return await send('updateBlock', { id: blockId, data: content, dataType: 'markdown' });
+}
+
+/**
+ * 设置完成时间
+ * 自定义属性 custom-mt-plantime
+ */
+export async function editPlanTime(blockId: string, time: string) {
+  return await send('setBlockAttrs', { id: blockId, attrs: { "custom-mt-plantime": time } });
+}
+
+/**
+ * 根据 block id 获取 block 内容
+ * @param blockid block id
+ * @returns 块信息，使用 Todo 进行包装
+ */
+export async function getBlockByBlockid(blockid: string) {
+  let queryBlockSql = `SELECT * FROM blocks WHERE id = '${blockid}'`
+  const blockRes = await send('sql', { stmt: queryBlockSql });
+  if (!blockRes.data) return null;
+  return blockRes.data[0];
+}

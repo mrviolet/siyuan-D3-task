@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-08-20
  * @LastEditors: yl_li
- * @LastEditTime: 2024-09-05
+ * @LastEditTime: 2024-11-29
  * @description: 样式文件
  */
 @import 'tailwindcss/base';
@@ -20,5 +20,13 @@
 
   .d3-mt * {
     box-sizing: border-box;
+  }
+
+  .d3-mt .protyle-action {
+    display: none;
+  }
+
+  .d3-mt .b3-typography div {
+    padding: 0;
   }
 }

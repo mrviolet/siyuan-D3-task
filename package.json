@@ -19,7 +19,8 @@
     "date-fns": "^4.1.0",
     "minimist": "^1.2.8",
     "pinia": "^2.2.2",
-    "vue": "^3.4.37"
+    "vue": "^3.4.37",
+    "vue-debounce": "^5.0.1"
   },
   "devDependencies": {
     "@types/minimist": "^1.2.5",

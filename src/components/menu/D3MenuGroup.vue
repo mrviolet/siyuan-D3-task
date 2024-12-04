@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-09-09
  * @LastEditors: yl_li
- * @LastEditTime: 2024-11-19
+ * @LastEditTime: 2024-11-30
  * @description: 循环的菜单, level 用于显示层级, 0级为笔记本, 1级及之后是文档
 -->
 <template>
@@ -10,7 +10,7 @@
     <div class="mt-1" v-for="nav in navs" :key="nav.id">
       <div @click="clickNav(nav.id, nav.label)"
         class="rounded-lg cursor-pointer hover:bg-[#f4f7fc] p-1.5 pl-3 grid grid-cols-nav-i gap-x-1.5"
-        :style="{ paddingLeft: (level + 0.75) + 'rem', backgroundColor: nav.id == navSelected.blockId ? '#f4f7fc' : '' }">
+        :style="{ paddingLeft: (level + 0.75) + 'rem', backgroundColor: nav.id == navSelected.navid ? '#f4f7fc' : '' }">
         <IconComponent :nav="nav" @click.stop="toggleChildVisibility(nav)" />
         <span class="self-center">{{ nav.label }}</span>
       </div>

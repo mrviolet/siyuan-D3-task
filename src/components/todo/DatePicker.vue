@@ -2,13 +2,13 @@
  * @Author: yl_li
  * @Date: 2024-11-06
  * @LastEditors: yl_li
- * @LastEditTime: 2024-11-27
+ * @LastEditTime: 2024-11-30
  * @description: 日期选择器, 基于 vue-datepicker 实现，使用 date-fns 汉化
 -->
 <template>
   <!-- 日期选择器 -->
   <div class="p-0.5 pt-[1px] rounded-md cursor-pointer	 text-[14px] hover:bg-[#e5e7eb]">
-    <VueDatePicker :modelValue="modelValue" position="left" :format-locale="zhCN" :enable-time-picker="false"
+    <VueDatePicker :modelValue="date" position="left" :format-locale="zhCN" :enable-time-picker="false"
       :ui="{ menu: 'd3-datepicker', calendarCell: 'd3-datepicker-cell' }" cancelText="清除" selectText="确定"
       @update:modelValue="handleDate">
       <template #arrow-left>
@@ -23,7 +23,7 @@
       <template #trigger>
         <span class="clickable-text" :style="warningStyle">
           <CalendarThree class="mr-2" theme="outline" />
-          <span :class="!modelValue ? 'text-slate-400': ''">{{ dateStr }}{{ dateMesage }}</span>
+          <span :class="!date ? 'text-slate-400' : ''">{{ dateStr }}{{ dateMesage }}</span>
         </span>
       </template>
     </VueDatePicker>
@@ -39,16 +39,18 @@
   import { computed } from 'vue';
 
   const props = defineProps<{
-    modelValue: Date,
+    modelValue: Date | undefined,
   }>();
 
-  const emit = defineEmits(['update:modelValue']);
+  const emit = defineEmits(['changed']);
+
+  const date = computed(() => props.modelValue);
 
   /**
  * 更新日期
  */
   const handleDate = (newDate: Date) => {
-    emit('update:modelValue', newDate); // 使用 emit 更新父组件的 modelValue
+    emit('changed', newDate);
   };
 
   /**

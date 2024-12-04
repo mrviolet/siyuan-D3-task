@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-09-04
  * @LastEditors: yl_li
- * @LastEditTime: 2024-11-26
+ * @LastEditTime: 2024-11-29
  * @description: 
  */
 export {};
@@ -28,10 +28,12 @@ declare global {
    */
   interface Todo{
     blockId: string,
-    content: string,
+    mk: string,
     isFinished: boolean,
     hpath: string, // 可读的笔记本路径
     planTime?: Date,
+    dom: string,
+    pid: string
   }
 
   /**
