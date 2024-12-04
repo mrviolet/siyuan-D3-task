@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-08-23
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-03
+ * @LastEditTime: 2024-12-04
  * @description: 任务管理主页面
 -->
 <template>
@@ -70,7 +70,7 @@
 
   const navList = ref<Nav[]>([])
   const todoList = ref<Todo[]>([])
-  const editTodo = ref<Todo>({ blockId: '', hpath: '', mk: '', dom: '', isFinished: false, pid: '' })
+  const editTodo = ref<Todo>({ blockId: '', hpath: '', mk: '', dom: '', isFinished: false, pid: '', docId: '' })
   const navTitle = ref<string>('今天')
   const navSelected = useNavStore();
   const todoSelected = useTodoStore();

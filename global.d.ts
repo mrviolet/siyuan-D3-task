@@ -2,10 +2,10 @@
  * @Author: yl_li
  * @Date: 2024-09-04
  * @LastEditors: yl_li
- * @LastEditTime: 2024-11-29
+ * @LastEditTime: 2024-12-04
  * @description: 
  */
-export {};
+export { };
 
 declare global {
   interface Window {
@@ -18,7 +18,7 @@ declare global {
   interface Nav {
     id: string,
     label: string,
-    path: string, 
+    path: string,
     notebook: string, // 笔记本id
     child?: Nav[]
   }
@@ -26,14 +26,15 @@ declare global {
   /**
    * 待办事项数据
    */
-  interface Todo{
+  interface Todo {
     blockId: string,
     mk: string,
     isFinished: boolean,
     hpath: string, // 可读的笔记本路径
     planTime?: Date,
     dom: string,
-    pid: string
+    pid: string,
+    docId: string
   }
 
   /**
@@ -42,5 +43,5 @@ declare global {
   interface TodoFilter {
     state?: 'all' | 'finished' | 'unfinished',
   }
-  
+
 }

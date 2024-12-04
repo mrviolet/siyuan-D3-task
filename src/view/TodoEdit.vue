@@ -27,12 +27,14 @@
     <!-- 工具条 -->
     <div class="flex-none mx-1 mt-1.5">
       <!-- 复制块id -->
-      <!-- <svg class="popover__block" data-id="20241126104059-q09riq5" style=""><use xlink:href="#iconFile"></use></svg> -->
-      <copy-link class="mx-1" theme="outline" size="16" fill="#333" @click="copyBlockId" />
+      <copy-link class="cursor-pointer p-0.5 ml-1 rounded ariaLabel hover:bg-gray-200 " theme="outline" size="16"
+        fill="#94a3b8" @click="copyBlockId" aria-label="复制块ID" />
       <!-- 查看块详情, 聚焦 -->
-      <scanning class="mx-1 popover__block" size="16" :data-id="todo.pid" fill="#333" />
+      <scanning class="cursor-pointer p-0.5 ml-1 rounded ariaLabel hover:bg-gray-200 popover__block" size="16"
+        :data-id="todo.pid" fill="#94a3b8" aria-label="聚焦" />
       <!-- 跳转块位置 -->
-      <copy-link class="mx-1" theme="outline" size="16" fill="#333" />
+      <share-three class="cursor-pointer p-0.5 ml-1 rounded ariaLabel hover:bg-gray-200 " theme="outline" size="16"
+        fill="#94a3b8" aria-label="跳转到位置" @click="openBlockInSiyuan" />
     </div>
   </div>
 </template>
@@ -40,8 +42,10 @@
 <script setup lang="ts">
   import DatePicker from '../components/todo/DatePicker.vue';
   import TodoContentEdit from '../components/todo/TodoContentEdit.vue';
-  import { CopyLink, Scanning } from '@icon-park/vue-next'
+  import { CopyLink, Scanning, ShareThree } from '@icon-park/vue-next'
   import { pushMsg } from '../api/MtaskApi';
+  import { openTab } from 'siyuan';
+  import { nextTick } from 'vue';
 
   const props = defineProps<{
     todo: Todo,
@@ -83,6 +87,35 @@
   function changeContent(val: string) {
     const param = { type: 'content', blockId: props.todo.blockId, pid: props.todo.pid, val }
     eventHandler('changed', param)
+  }
+
+
+  /**
+   * 跳转块位置
+   */
+  async function openBlockInSiyuan() {
+    openTab({
+      app: window.mtaskPluginInstance.app,
+      doc: {
+        id: props.todo.docId
+      },
+    })
+    setTimeout(() => {
+      let taskEle = document.querySelector<HTMLElement>(`[data-node-id="${props.todo.pid}"]`)
+      if (taskEle) {
+        taskEle.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'center',
+        });
+        // 添加高亮属性
+        taskEle.style.backgroundColor = '#fde68a'; // 添加高亮背景色
+        taskEle.style.transition = 'background-color 0.3s ease-in-out'; // 添加过渡效果
+        setTimeout(() => {
+          taskEle.style.backgroundColor = ''; // 移除高亮背景色 2s 后
+        }, 2000);
+      }
+    }, 300);
   }
 
 </script>
