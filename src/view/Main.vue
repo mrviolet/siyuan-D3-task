@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-08-23
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-04
+ * @LastEditTime: 2024-12-11
  * @description: 任务管理主页面
 -->
 <template>
@@ -25,20 +25,44 @@
         </div>
       </div>
       <!-- 中间工作区 -->
-      <div class="flex-1 w-64 p-4 pr-2 bg-white rounded-lg">
+      <div class="flex-1 w-64 p-4 pt-2 pr-2 bg-white rounded-lg">
         <!-- 文档标题 -->
         <div>
-          <div class="font-bold mb-2 text-xl">
-            <span v-for="title in todoTitle">
-              <span>{{ title }}</span>
-              <span v-if="title !== todoTitle[todoTitle.length - 1]" class="text-slate-300"> > </span>
-            </span>
+          <div class="min-h-4 flex">
+            <!-- 头部标题部分 -->
+            <div style="width: calc(100% - 44px)" class="mb-2 text-gray-400 text-xs break-all ">
+              <box class="pr-1" theme="outline" size="12" fill="#6b7280" />
+              <span v-for="(title, index) in todoTitle.titleList">
+                <bookshelf v-if="index > 0" theme="outline" class="pr-1" size="12" fill="#6b7280" />
+                <span class="break-all">{{ title }}</span>
+                <span v-if="index < todoTitle.titleList.length - 1"> / </span>
+              </span>
+            </div>
+            <!-- 工具栏部分 -->
+            <div class="w-[60px]">
+              <!-- 隐藏已完成 or 展示已完成 -->
+              <checklist class="p-1 rounded bg-gray-200 mr-1 cursor-pointer ariaLabel" theme="outline" size="16"
+                fill="#000" aria-label="隐藏已完成" v-show="todoListParam.showFinished"
+                @click="changeFinishedFlag(false)" />
+              <checklist class="p-1 rounded mr-1 cursor-pointer ariaLabel" theme="outline" size="16" fill="#d1d5db"
+                aria-label="展示已完成" v-show="!todoListParam.showFinished"
+                @click="changeFinishedFlag(true)" />
+              <!-- 隐藏倒计时 or 展示倒计时 -->
+              <timer class="p-1 rounded bg-gray-200 mr-1 cursor-pointer ariaLabel" theme="outline" size="16" fill="#000"
+                aria-label="隐藏倒计时" v-show="todoListParam.showTimer" @click="todoListParam.changeShowTimer(false)" />
+              <timer class="p-1 rounded mr-1 cursor-pointer ariaLabel" theme="outline" size="16" fill="#d1d5db"
+                v-show="!todoListParam.showTimer" aria-label="展示倒计时" @click="todoListParam.changeShowTimer(true)" />
+            </div>
+          </div>
+          <!-- 主标题 -->
+          <div class="font-bold mb-2 text-xl break-all">
+            <span>{{ todoTitle.mainTitle }}</span>
           </div>
         </div>
         <!-- 待办列表 -->
         <TodoList style="height: calc(100% - 44px)" class="w-full flex flex-col overflow-y-auto" :list="todoList"
-          @pick="pickTodo" @changed="changeTodo"/>
-      </div> 
+          @pick="pickTodo" @changed="changeTodo" />
+      </div>
       <!-- 右侧编辑区 -->
       <div class="flex-1 w-22 flex flex-col">
         <!-- 任务内容编辑 -->
@@ -62,22 +86,29 @@
   import TimeLine from '../components/todo/TimeLine.vue';
 
   import { debounce } from 'vue-debounce'
-  import { useTodoStore, useNavStore } from '../stores/mtask';
-  import { AllApplication, CheckCorrect, Plan } from '@icon-park/vue-next'
+  import { useTodoStore, useNavStore, useTodoListParamStore } from '../stores/mtask';
+  import { AllApplication, CheckCorrect, Plan, Box, Bookshelf, Checklist, Timer } from '@icon-park/vue-next'
   import { getOpenNotebookList, editBlockMkByBlockId, editPlanTime, getBlockByBlockid } from '../api/MtaskApi';
   import { getTodosByBoxid, getTodosByDocid } from '../api/QueryTodoApi';
   import { ref, computed } from 'vue';
 
   const navList = ref<Nav[]>([])
   const todoList = ref<Todo[]>([])
-  const editTodo = ref<Todo>({ blockId: '', hpath: '', mk: '', dom: '', isFinished: false, pid: '', docId: '' })
+  const editTodo = ref<Todo>({ blockId: '', hpath: '', mk: '', dom: '', isFinished: false, pid: '', docId: '', pMarkdown: '' })
+  // 待办事项标题, 默认为"今天"
   const navTitle = ref<string>('今天')
+
+  // 使用存储在 store 中的内容
   const navSelected = useNavStore();
   const todoSelected = useTodoStore();
+  const todoListParam = useTodoListParamStore();
 
+  // 标题部分
   const todoTitle = computed(() => {
+    const titleList = navTitle.value.split('/')
+    const mainTitle = titleList.pop()
     // 根据 / 分割字符串
-    return navTitle.value.split('/')
+    return { mainTitle, titleList }
   });
 
   // 获取笔记本列表
@@ -101,7 +132,7 @@
    */
   function navClicked(param: { navid: string, level: number, label: string }) {
     if (param.navid !== navSelected.navid) {
-      loalTodoList(param)
+      loadTodoList(param)
       pickTodo(null)
     }
   }
@@ -113,26 +144,31 @@
    * level = 0, 获取笔记本下所有 todo
    * level > 0, 获取文档下所有 todo
    */
-  function loalTodoList(param: { navid: string, level: number, label: string }) {
+  function loadTodoList(param: { navid: string, level: number, label: string }) {
     navSelected.change(param)
     navTitle.value = param.label
+    let filterParam: TodoFilter = { state: 'unfinished' }
+    if (todoListParam.showFinished) {
+      filterParam.state = 'all'
+    }
     if (param.level === -1) {
       todoList.value = []
     } else if (param.level === 0) {
-      getTodosByBoxid(param.navid).then(res => {
+      getTodosByBoxid(param.navid, filterParam).then(res => {
         todoList.value = res
       })
     } else {
-      getTodosByDocid(param.navid).then(res => {
+      getTodosByDocid(param.navid, filterParam).then(res => {
         todoList.value = res
       })
     }
   }
 
+
   /**
    * 获取 todo list 的防抖函数
    */
-  const loalTodoListDebounce = debounce((param: any) => { loalTodoList(param) }, 100)
+  const loadTodoListDebounce = debounce((param: any) => { loadTodoList(param) }, 100)
 
   /**
    * 当 todo list 中的 item 被点击时
@@ -142,7 +178,7 @@
   function pickTodo(blockId: string | null) {
     if (blockId === null) {
       todoSelected.change("")
-      editTodo.value = { blockId: '', hpath: '', mk: '', dom: '', isFinished: false, pid: '' }
+      editTodo.value = { blockId: '', hpath: '', mk: '', dom: '', isFinished: false, pid: '', docId: '',pMarkdown: '' }
     } else {
       todoSelected.change(blockId)
       for (let todo of todoList.value) {
@@ -169,7 +205,7 @@
           getBlockByBlockid(param.pid).then(b => {
             const mk = b.markdown.replace(/^\* \[\s*\]/, '* [X]')
             editBlockMkByBlockId(param.pid, mk).then(() => {
-              loalTodoListDebounce(navSelected)
+              loadTodoListDebounce(navSelected)
             })
           })
         } else if (param.val.toString() == "false") {
@@ -177,7 +213,7 @@
           getBlockByBlockid(param.pid).then(b => {
             const mk = b.markdown.replace(/^\* \[x\]/i, '* [ ]')
             editBlockMkByBlockId(param.pid, mk).then(() => {
-              loalTodoListDebounce(navSelected)
+              loadTodoListDebounce(navSelected)
             })
           })
         }
@@ -185,17 +221,26 @@
       case 'content':
         editTodo.value.mk = param.val.toString()
         editBlockMkByBlockId(param.blockId, param.val.toString()).then(() => {
-          loalTodoListDebounce(navSelected)
+          loadTodoListDebounce(navSelected)
         })
         break
       case 'time':
         editTodo.value.planTime = new Date(param.val)
         editPlanTime(param.pid, param.val.toString()).then(() => {
-          loalTodoListDebounce(navSelected)
+          loadTodoListDebounce(navSelected)
         })
         break
     }
 
+  }
+
+  /**
+   * 
+   * @param flag 完成/未完成
+   */
+  function changeFinishedFlag(flag: boolean) {
+    todoListParam.changeShowFinished(flag)
+    loadTodoListDebounce(navSelected)
   }
 </script>
 

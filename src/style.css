@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-08-20
  * @LastEditors: yl_li
- * @LastEditTime: 2024-11-29
+ * @LastEditTime: 2024-12-11
  * @description: 样式文件
  */
 @import 'tailwindcss/base';
@@ -20,6 +20,7 @@
 
   .d3-mt * {
     box-sizing: border-box;
+    font-size: 14px;
   }
 
   .d3-mt .protyle-action {

@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-11-26
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-03
+ * @LastEditTime: 2024-12-11
  * @description: 查询 todo 相关的接口，基于 siyuan api 封装 
  */
 import { formatTodo } from "../utils/entityUtil";
@@ -19,13 +19,13 @@ import { send } from "./SiyuanApi";
  */
 export async function getTodosByBoxid(boxid: string, filter: TodoFilter = { state: 'unfinished' }) {
   if (!boxid) return [];
-  let queryTodoSql = `SELECT id, ial FROM blocks WHERE type = 'i' AND subtype = 't' AND box = '${boxid}'`
+  let queryTodoSql = `SELECT id, ial, markdown FROM blocks WHERE type = 'i' AND subtype = 't' AND box = '${boxid}'`
   if (filter.state == 'unfinished') {
     queryTodoSql += " and markdown like '* [ ]%'"
   } else if (filter.state == 'finished') {
     queryTodoSql += " and markdown like '* [x]%'"
   }
-  queryTodoSql = `SELECT b.*, a.ial FROM (${queryTodoSql}) as a LEFT JOIN 
+  queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown FROM (${queryTodoSql}) as a LEFT JOIN 
     (SELECT * FROM blocks WHERE type = 'p' GROUP BY parent_id) as b ON a.id = b.parent_id`
   const todoRes = await send('sql', { stmt: queryTodoSql });
   const formattedTodos = await Promise.all(todoRes.data.map(async (d: any) => formatTodo(d)));
@@ -40,13 +40,13 @@ export async function getTodosByBoxid(boxid: string, filter: TodoFilter = { stat
  */
 export async function getTodosByDocid(docid: string, filter: TodoFilter = { state: 'unfinished' }) {
   if (!docid) return [];
-  let queryTodoSql = `SELECT id, ial FROM blocks WHERE type = 'i' AND subtype = 't' AND path like '%${docid}%'`
+  let queryTodoSql = `SELECT id, ial, markdown FROM blocks WHERE type = 'i' AND subtype = 't' AND path like '%${docid}%'`
   if (filter.state == 'unfinished') {
     queryTodoSql += " and markdown like '* [ ]%'"
   } else if (filter.state == 'finished') {
     queryTodoSql += " and markdown like '* [x]%'"
   }
-  queryTodoSql = `SELECT b.*, a.ial FROM (${queryTodoSql}) as a LEFT JOIN 
+  queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown FROM (${queryTodoSql}) as a LEFT JOIN 
     (SELECT * FROM blocks WHERE type = 'p' GROUP BY parent_id) as b ON a.id = b.parent_id`
   const todoRes = await send('sql', { stmt: queryTodoSql });
   const formattedTodos = await Promise.all(todoRes.data.map(async (d: any) => formatTodo(d)));

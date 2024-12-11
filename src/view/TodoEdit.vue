@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-10-30
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-04
+ * @LastEditTime: 2024-12-11
  * @description: todo 编辑页面, 暴漏 changed 事件
  * type = time, 修改完成时间
  * type = content, 修改内容
@@ -45,7 +45,6 @@
   import { CopyLink, Scanning, ShareThree } from '@icon-park/vue-next'
   import { pushMsg } from '../api/MtaskApi';
   import { openTab } from 'siyuan';
-  import { nextTick } from 'vue';
 
   const props = defineProps<{
     todo: Todo,
@@ -101,7 +100,7 @@
       },
     })
     setTimeout(() => {
-      let taskEle = document.querySelector<HTMLElement>(`[data-node-id="${props.todo.pid}"]`)
+      let taskEle = document.querySelector<HTMLElement>(`[data-node-id="${props.todo.pid}"][data-type="NodeListItem"]`)
       if (taskEle) {
         taskEle.scrollIntoView({
           behavior: 'smooth',

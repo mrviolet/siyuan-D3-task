@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-09-04
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-04
+ * @LastEditTime: 2024-12-11
  * @description: 
  */
 export { };
@@ -34,7 +34,8 @@ declare global {
     planTime?: Date,
     dom: string,
     pid: string,
-    docId: string
+    docId: string,
+    pMarkdown: string
   }
 
   /**

@@ -27,3 +27,20 @@ export const useTodoStore = defineStore('todoSelectId', {
     }
   },
 })
+
+/**
+ * todo list 参数
+ * 包括是否展示已完成任务, 是否展示倒计时
+ */
+export const useTodoListParamStore = defineStore('todoListParamId', {
+  state: () => ({showFinished: false, showTimer: false}),
+  getters: {},
+  actions: {
+    changeShowFinished(newVal:boolean) {
+      this.showFinished = newVal;
+    },
+    changeShowTimer(newVal:boolean) {
+      this.showTimer = newVal;
+    }
+  },
+})

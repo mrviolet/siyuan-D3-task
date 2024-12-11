@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-09-14
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-04
+ * @LastEditTime: 2024-12-11
  * @description: 实体相关工具类
  */
 
@@ -18,18 +18,20 @@ import { parseIal2JSON } from "../utils/ialUtil"
  *             - id, hpath, fcontent, markdown
  * @returns 返回interface Todo 对象
  */
-export async function formatTodo(data: { id: string, hpath: string, fcontent: string, markdown: string, parent_id: string, ial: string, root_id: string }): Promise<Todo> {
+export async function formatTodo(data: { id: string, hpath: string, fcontent: string, markdown: string, parent_id: string, ial: string, root_id: string, p_markdown: string }): Promise<Todo> {
   // 获取块的 dom, 用于展示
   const dom = await getDomByBlockId(data.id)
+
   // 封装 todo
   let todo: Todo = {
     blockId: data.id,
     mk: data.markdown,
-    isFinished: data.markdown.startsWith("* [X] "),
+    isFinished: data.p_markdown.startsWith("* [X] "),
     hpath: data.hpath, // 可读的笔记本路径
     dom: dom.data.dom.replace("contenteditable", "a"),
     pid: data.parent_id,
-    docId: data.root_id
+    docId: data.root_id,
+    pMarkdown: data.p_markdown,
   }
   // 获取 plantime
   const plantime = parseIal2JSON(data.ial)["custom-mt-plantime"]
