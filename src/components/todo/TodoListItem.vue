@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-11-26
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-11
+ * @LastEditTime: 2024-12-12
  * @description: 
 -->
 <!--
@@ -33,8 +33,8 @@
       </p>
     </div>
     <div :class="{ 'text-rose-600': isOverdue, 'text-sky-600': !isOverdue }">
-      <div>{{ getPlanTime() }}</div>
-      <div class="mt-1 text-right" v-show="paramStore.showTimer">{{ countDown }}</div>
+      <div class="text-xs">{{ getPlanTime() }}</div>
+      <div class="mt-1 text-xs text-right" v-show="paramStore.showTimer">{{ countDown }}</div>
     </div>
   </div>
 </template>

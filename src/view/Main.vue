@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-08-23
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-11
+ * @LastEditTime: 2024-12-12
  * @description: 任务管理主页面
 -->
 <template>
@@ -34,19 +34,17 @@
               <box class="pr-1" theme="outline" size="12" fill="#6b7280" />
               <span v-for="(title, index) in todoTitle.titleList">
                 <bookshelf v-if="index > 0" theme="outline" class="pr-1" size="12" fill="#6b7280" />
-                <span class="break-all">{{ title }}</span>
-                <span v-if="index < todoTitle.titleList.length - 1"> / </span>
+                <span class="break-all pt-[1px]">{{ title }}</span>
+                <span class="pt-[1px]" v-if="index < todoTitle.titleList.length - 1"> / </span>
               </span>
             </div>
             <!-- 工具栏部分 -->
             <div class="w-[60px]">
               <!-- 隐藏已完成 or 展示已完成 -->
               <checklist class="p-1 rounded bg-gray-200 mr-1 cursor-pointer ariaLabel" theme="outline" size="16"
-                fill="#000" aria-label="隐藏已完成" v-show="todoListParam.showFinished"
-                @click="changeFinishedFlag(false)" />
+                fill="#000" aria-label="隐藏已完成" v-show="todoListParam.showFinished" @click="changeFinishedFlag(false)" />
               <checklist class="p-1 rounded mr-1 cursor-pointer ariaLabel" theme="outline" size="16" fill="#d1d5db"
-                aria-label="展示已完成" v-show="!todoListParam.showFinished"
-                @click="changeFinishedFlag(true)" />
+                aria-label="展示已完成" v-show="!todoListParam.showFinished" @click="changeFinishedFlag(true)" />
               <!-- 隐藏倒计时 or 展示倒计时 -->
               <timer class="p-1 rounded bg-gray-200 mr-1 cursor-pointer ariaLabel" theme="outline" size="16" fill="#000"
                 aria-label="隐藏倒计时" v-show="todoListParam.showTimer" @click="todoListParam.changeShowTimer(false)" />
@@ -60,7 +58,7 @@
           </div>
         </div>
         <!-- 待办列表 -->
-        <TodoList style="height: calc(100% - 44px)" class="w-full flex flex-col overflow-y-auto" :list="todoList"
+        <TodoList style="height: calc(100% - 52px)" class="w-full flex flex-col overflow-y-auto" :list="todoList"
           @pick="pickTodo" @changed="changeTodo" />
       </div>
       <!-- 右侧编辑区 -->
@@ -178,7 +176,7 @@
   function pickTodo(blockId: string | null) {
     if (blockId === null) {
       todoSelected.change("")
-      editTodo.value = { blockId: '', hpath: '', mk: '', dom: '', isFinished: false, pid: '', docId: '',pMarkdown: '' }
+      editTodo.value = { blockId: '', hpath: '', mk: '', dom: '', isFinished: false, pid: '', docId: '', pMarkdown: '' }
     } else {
       todoSelected.change(blockId)
       for (let todo of todoList.value) {
