@@ -19,6 +19,7 @@ interface UrlMap {
   getDom: string // 获取 dom
   updateBlock: string // 编辑块
   setBlockAttrs: string // 设置块属性
+  getBlockAttrs: string // 获取块属性
 }
 
 const urlMap: UrlMap = {
@@ -29,7 +30,8 @@ const urlMap: UrlMap = {
   pushMsg: '/api/notification/pushMsg',
   getDom: '/api/block/getBlockDOM',
   updateBlock: '/api/block/updateBlock',
-  setBlockAttrs: '/api/attr/setBlockAttrs'
+  setBlockAttrs: '/api/attr/setBlockAttrs',
+  getBlockAttrs: '/api/attr/getBlockAttrs'
 };
 
 export async function send(methodName: string, param?: any) {

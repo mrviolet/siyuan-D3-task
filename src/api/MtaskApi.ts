@@ -2,11 +2,11 @@
  * @Author: yl_li
  * @Date: 2024-09-10
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-01
+ * @LastEditTime: 2024-12-19
  * @description: 根据 suyuan-api 封装好的, 适配插件的 api
  */
 import { send } from "./SiyuanApi";
-
+import { format } from 'date-fns';
 
 /**
  * 获取打开的笔记本列表
@@ -58,9 +58,20 @@ export async function getDomByBlockId(blockId: string) {
 
 /**
  * 根据 block id 编辑 block 内容, 使用 markdown 语法
+ * 同时需要恢复之前的块属性
  */
 export async function editBlockMkByBlockId(blockId: string, content: string) {
-  return await send('updateBlock', { id: blockId, data: content, dataType: 'markdown' });
+  // 获取块属性
+  const blockAttrRes = await send('getBlockAttrs', { id: blockId });
+  const attrs = blockAttrRes.data;
+  // 移除不是 custom 开头的字段
+  Object.keys(attrs).forEach(key => {
+    if (!key.startsWith('custom')) {
+      delete attrs[key];
+    }
+  });
+  await send('updateBlock', { id: blockId, data: content, dataType: 'markdown' })
+  await  send('setBlockAttrs', { id: blockId, attrs });
 }
 
 /**
@@ -68,7 +79,7 @@ export async function editBlockMkByBlockId(blockId: string, content: string) {
  * 自定义属性 custom-mt-plantime
  */
 export async function editPlanTime(blockId: string, time: string) {
-  return await send('setBlockAttrs', { id: blockId, attrs: { "custom-mt-plantime": time } });
+  return await send('setBlockAttrs', { id: blockId, attrs: { "custom-mt-plantime": format(time, 'yyyyMMdd') + '000000' } });
 }
 
 /**

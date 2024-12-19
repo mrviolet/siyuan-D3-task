@@ -2,12 +2,14 @@
  * @Author: yl_li
  * @Date: 2024-09-14
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-11
+ * @LastEditTime: 2024-12-13
  * @description: 实体相关工具类
  */
 
 import { getDomByBlockId } from "../api/MtaskApi"
 import { parseIal2JSON } from "../utils/ialUtil"
+import { parse } from 'date-fns';
+
 
 /**
  * 格式化待办事项数据
@@ -35,7 +37,6 @@ export async function formatTodo(data: { id: string, hpath: string, fcontent: st
   }
   // 获取 plantime
   const plantime = parseIal2JSON(data.ial)["custom-mt-plantime"]
-  if (plantime) todo.planTime = new Date(plantime);
-
+  if (plantime) todo.planTime = parse(plantime, "yyyyMMddHHmmss", new Date())
   return todo
 }

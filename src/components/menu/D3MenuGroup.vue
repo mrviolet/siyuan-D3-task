@@ -87,7 +87,6 @@
       param.label = label + '/' + param.label
     }
     emitHandler('clickNav', param)
-
   }
 
 </script>

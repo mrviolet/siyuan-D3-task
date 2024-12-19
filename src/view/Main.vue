@@ -87,7 +87,7 @@
   import { useTodoStore, useNavStore, useTodoListParamStore } from '../stores/mtask';
   import { AllApplication, CheckCorrect, Plan, Box, Bookshelf, Checklist, Timer } from '@icon-park/vue-next'
   import { getOpenNotebookList, editBlockMkByBlockId, editPlanTime, getBlockByBlockid } from '../api/MtaskApi';
-  import { getTodosByBoxid, getTodosByDocid } from '../api/QueryTodoApi';
+  import { getTodosByBoxid, getTodosByDocid, getTodayTodo, getTomorrowTodo, getAllTodo } from '../api/QueryTodoApi';
   import { ref, computed } from 'vue';
 
   const navList = ref<Nav[]>([])
@@ -150,7 +150,19 @@
       filterParam.state = 'all'
     }
     if (param.level === -1) {
-      todoList.value = []
+      if (param.label === '今天') {
+        getTodayTodo(filterParam).then(res => {
+          todoList.value = res
+        })
+      } else if (param.label === '明天') {
+        getTomorrowTodo(filterParam).then(res => {
+          todoList.value = res
+        })
+      } else if (param.label === '收集箱') {
+        getAllTodo(filterParam).then(res => {
+          todoList.value = res
+        })
+      }
     } else if (param.level === 0) {
       getTodosByBoxid(param.navid, filterParam).then(res => {
         todoList.value = res
@@ -229,7 +241,6 @@
         })
         break
     }
-
   }
 
   /**

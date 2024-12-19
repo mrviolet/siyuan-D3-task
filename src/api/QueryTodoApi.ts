@@ -2,11 +2,12 @@
  * @Author: yl_li
  * @Date: 2024-11-26
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-12
+ * @LastEditTime: 2024-12-13
  * @description: 查询 todo 相关的接口，基于 siyuan api 封装 
  */
 import { formatTodo } from "../utils/entityUtil";
 import { send } from "./SiyuanApi";
+import { format, addDays } from 'date-fns';
 
 /**
  * 根据笔记本 id 查询 todo, 默认仅显示已完成的
@@ -41,14 +42,15 @@ export async function getTodosByBoxid(boxid: string, filter: TodoFilter = { stat
  */
 export async function getTodosByDocid(docid: string, filter: TodoFilter = { state: 'unfinished' }) {
   if (!docid) return [];
-  let queryTodoSql = `SELECT id, ial, markdown FROM blocks WHERE type = 'i' AND subtype = 't' AND path like '%${docid}%'`
+  let queryTodoSql = `SELECT id, ial, markdown, created FROM blocks WHERE type = 'i' AND subtype = 't' AND path like '%${docid}%'`
   if (filter.state == 'unfinished') {
     queryTodoSql += " and markdown like '* [ ]%'"
   } else if (filter.state == 'finished') {
     queryTodoSql += " and markdown like '* [x]%'"
   }
   queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown FROM (${queryTodoSql}) as a LEFT JOIN 
-    (SELECT * FROM blocks WHERE type = 'p' GROUP BY parent_id) as b ON a.id = b.parent_id`
+    (SELECT * FROM blocks WHERE type = 'p' GROUP BY parent_id) as b ON a.id = b.parent_id
+    ORDER BY a.created`
   const todoRes = await send('sql', { stmt: queryTodoSql });
   const formattedTodos = await Promise.all(todoRes.data.map(async (d: any) => formatTodo(d)));
   return formattedTodos;
@@ -59,21 +61,59 @@ export async function getTodosByDocid(docid: string, filter: TodoFilter = { stat
  * 查询计划完成时间为今天的 todo
  * 不区分是否完成，全量数据
  */
-export async function getTodayTodo() {
-  // let queryBlockSql = `SELECT * FROM blocks WHERE id = '${blockid}'`
-  // const blockRes = await send('sql', { stmt: queryBlockSql });
-  // if (!blockRes.data) return null;
-  // return blockRes.data.map((d: any) => formatTodo(d))[0];
+export async function getTodayTodo(filter: TodoFilter = { state: 'unfinished' }) {
+  const timeStr = format(new Date(), 'yyyyMMdd') + '000000'
+  let queryTodoSql = `SELECT id, ial, markdown, created FROM blocks WHERE type = 'i' AND subtype = 't' AND id IN
+  (SELECT block_id FROM attributes WHERE name = 'custom-mt-plantime' AND value = '${timeStr}')`
+  if (filter.state == 'unfinished') {
+    queryTodoSql += " and markdown like '* [ ]%'"
+  } else if (filter.state == 'finished') {
+    queryTodoSql += " and markdown like '* [x]%'"
+  }
+  queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown FROM (${queryTodoSql}) as a LEFT JOIN 
+    (SELECT * FROM blocks WHERE type = 'p' GROUP BY parent_id) as b ON a.id = b.parent_id
+    ORDER BY a.created`
+  const todoRes = await send('sql', { stmt: queryTodoSql });
+  const formattedTodos = await Promise.all(todoRes.data.map(async (d: any) => formatTodo(d)));
+  return formattedTodos;
 }
 
 /**
  * 查询计划完成时间为明天的 todo list
  * 不区分是否完成，全量数据
  */
-export async function queryTomorrowTodo() {
-
+export async function getTomorrowTodo(filter: TodoFilter = { state: 'unfinished' }) {
+  const timeStr = format(addDays(new Date(), 1), 'yyyyMMdd') + '000000'
+  let queryTodoSql = `SELECT id, ial, markdown, created FROM blocks WHERE type = 'i' AND subtype = 't' AND id IN
+  (SELECT block_id FROM attributes WHERE name = 'custom-mt-plantime' AND value = '${timeStr}')`
+  if (filter.state == 'unfinished') {
+    queryTodoSql += " and markdown like '* [ ]%'"
+  } else if (filter.state == 'finished') {
+    queryTodoSql += " and markdown like '* [x]%'"
+  }
+  queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown FROM (${queryTodoSql}) as a LEFT JOIN 
+    (SELECT * FROM blocks WHERE type = 'p' GROUP BY parent_id) as b ON a.id = b.parent_id
+    ORDER BY a.created`
+  const todoRes = await send('sql', { stmt: queryTodoSql });
+  const formattedTodos = await Promise.all(todoRes.data.map(async (d: any) => formatTodo(d)));
+  return formattedTodos;
 }
 
-export async function queryAllTodo(filter: TodoFilter = { state: 'unfinished' }) {
-
+/**
+ * 查询所有的 todo
+ * @param filter 
+ */
+export async function getAllTodo(filter: TodoFilter = { state: 'unfinished' }) {
+  let queryTodoSql = `SELECT id, ial, markdown, created FROM blocks WHERE type = 'i' AND subtype = 't'`
+  if (filter.state == 'unfinished') {
+    queryTodoSql += " and markdown like '* [ ]%'"
+  } else if (filter.state == 'finished') {
+    queryTodoSql += " and markdown like '* [x]%'"
+  }
+  queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown FROM (${queryTodoSql}) as a LEFT JOIN 
+    (SELECT * FROM blocks WHERE type = 'p' GROUP BY parent_id) as b ON a.id = b.parent_id
+    ORDER BY a.created`
+  const todoRes = await send('sql', { stmt: queryTodoSql });
+  const formattedTodos = await Promise.all(todoRes.data.map(async (d: any) => formatTodo(d)));
+  return formattedTodos;
 }

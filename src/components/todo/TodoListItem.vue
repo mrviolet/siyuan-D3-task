@@ -2,14 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-11-26
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-12
- * @description: 
--->
-<!--
- * @Author: yl_li
- * @Date: 2024-11-26
- * @LastEditors: yl_li
- * @LastEditTime: 2024-12-11
+ * @LastEditTime: 2024-12-13
  * @description: todo 列表的单个任务组件，暴漏两个事件
  * 1、changed - 当 todo 的完成状态发生变化时触发, 参数1为 block id, 参数2为 true 或 false
  * 2、pick - 当 todo 被选中时触发, 参数为 block id
