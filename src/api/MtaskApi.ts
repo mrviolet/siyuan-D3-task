@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-09-10
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-19
+ * @LastEditTime: 2024-12-20
  * @description: 根据 suyuan-api 封装好的, 适配插件的 api
  */
 import { send } from "./SiyuanApi";
@@ -64,15 +64,38 @@ export async function editBlockMkByBlockId(blockId: string, content: string) {
   // 获取块属性
   const blockAttrRes = await send('getBlockAttrs', { id: blockId });
   const attrs = blockAttrRes.data;
-  // 移除不是 custom 开头的字段
+  // 移除不是 custom- 开头的字段
   Object.keys(attrs).forEach(key => {
-    if (!key.startsWith('custom')) {
+    if (!key.startsWith('custom-')) {
       delete attrs[key];
     }
   });
   await send('updateBlock', { id: blockId, data: content, dataType: 'markdown' })
-  await  send('setBlockAttrs', { id: blockId, attrs });
+  await send('setBlockAttrs', { id: blockId, attrs });
 }
+
+/** 根据 block id 编辑 block 内容, 同时新增 log 内容 */
+export async function editBlockMkAndLogByBlockId(blockId: string, content: string, log: Timeline) {
+  // 获取块属性
+  const blockAttrRes = await send('getBlockAttrs', { id: blockId });
+  const attrs = blockAttrRes.data;
+  // 移除不是 custom- 开头的字段
+  Object.keys(attrs).forEach(key => {
+    if (!key.startsWith('custom-')) { }
+  })
+  // 新增 log 内容
+  let logs: Timeline[]
+  if (attrs["custom-mt-log"]) {
+    logs = JSON.parse(attrs["custom-mt-log"])
+  } else {
+    logs = [];
+  }
+  logs.push(log);
+  attrs["custom-mt-log"] = JSON.stringify(logs);
+  await send('updateBlock', { id: blockId, data: content, dataType: 'markdown' })
+  await send('setBlockAttrs', { id: blockId, attrs });
+}
+
 
 /**
  * 设置完成时间

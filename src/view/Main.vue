@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-08-23
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-12
+ * @LastEditTime: 2024-12-20
  * @description: 任务管理主页面
 -->
 <template>
@@ -64,12 +64,12 @@
       <!-- 右侧编辑区 -->
       <div class="flex-1 w-22 flex flex-col">
         <!-- 任务内容编辑 -->
-        <div class="bg-white rounded-lg p-4 pb-2 flex-grow max-h-[80%]">
+        <div class="bg-white rounded-lg p-4 pb-2 flex-grow h-[70%]">
           <TodoEdit :todo="editTodo" @changed="changeTodo" />
         </div>
         <!-- 任务时间线 -->
-        <div class="bg-white rounded-lg mt-2 min-h-[20px] max-h-[50%] p-4 pr-2">
-          <TimeLine class="h-full" />
+        <div class="bg-white rounded-lg mt-2 h-[30%] p-4 pr-2">
+          <TimeLine class="h-full" :data="editTodo.logs" />
         </div>
       </div>
     </div>
@@ -83,16 +83,17 @@
   import TodoEdit from './TodoEdit.vue';
   import TimeLine from '../components/todo/TimeLine.vue';
 
+  import { format } from 'date-fns';
   import { debounce } from 'vue-debounce'
   import { useTodoStore, useNavStore, useTodoListParamStore } from '../stores/mtask';
   import { AllApplication, CheckCorrect, Plan, Box, Bookshelf, Checklist, Timer } from '@icon-park/vue-next'
-  import { getOpenNotebookList, editBlockMkByBlockId, editPlanTime, getBlockByBlockid } from '../api/MtaskApi';
+  import { getOpenNotebookList, editBlockMkByBlockId, editPlanTime, getBlockByBlockid, editBlockMkAndLogByBlockId } from '../api/MtaskApi';
   import { getTodosByBoxid, getTodosByDocid, getTodayTodo, getTomorrowTodo, getAllTodo } from '../api/QueryTodoApi';
   import { ref, computed } from 'vue';
 
   const navList = ref<Nav[]>([])
   const todoList = ref<Todo[]>([])
-  const editTodo = ref<Todo>({ blockId: '', hpath: '', mk: '', dom: '', isFinished: false, pid: '', docId: '', pMarkdown: '' })
+  const editTodo = ref<Todo>({ blockId: '', hpath: '', mk: '', dom: '', isFinished: false, pid: '', docId: '', pMarkdown: '', logs: [] })
   // 待办事项标题, 默认为"今天"
   const navTitle = ref<string>('今天')
 
@@ -188,7 +189,7 @@
   function pickTodo(blockId: string | null) {
     if (blockId === null) {
       todoSelected.change("")
-      editTodo.value = { blockId: '', hpath: '', mk: '', dom: '', isFinished: false, pid: '', docId: '', pMarkdown: '' }
+      editTodo.value = { blockId: '', hpath: '', mk: '', dom: '', isFinished: false, pid: '', docId: '', pMarkdown: '', logs: [] }
     } else {
       todoSelected.change(blockId)
       for (let todo of todoList.value) {
@@ -211,21 +212,9 @@
     switch (param.type) {
       case 'state':
         if (param.val.toString() == "true") {
-          editTodo.value.isFinished = true
-          getBlockByBlockid(param.pid).then(b => {
-            const mk = b.markdown.replace(/^\* \[\s*\]/, '* [X]')
-            editBlockMkByBlockId(param.pid, mk).then(() => {
-              loadTodoListDebounce(navSelected)
-            })
-          })
+          changeTodoState(param.pid, true)
         } else if (param.val.toString() == "false") {
-          editTodo.value.isFinished = false
-          getBlockByBlockid(param.pid).then(b => {
-            const mk = b.markdown.replace(/^\* \[x\]/i, '* [ ]')
-            editBlockMkByBlockId(param.pid, mk).then(() => {
-              loadTodoListDebounce(navSelected)
-            })
-          })
+          changeTodoState(param.pid, false)
         }
         break
       case 'content':
@@ -251,6 +240,26 @@
     todoListParam.changeShowFinished(flag)
     loadTodoListDebounce(navSelected)
   }
+
+  /** 修改任务状态 */
+  function changeTodoState(blockId: string, state: boolean) {
+    editTodo.value.isFinished = state
+    getBlockByBlockid(blockId).then(block => {
+      let mk: string, logStr: string
+      if (state) {
+        logStr = "完成任务"
+        mk = block.markdown.replace(/^\* \[\s*\]/, '* [X]')
+      } else {
+        logStr = "取消完成任务"
+        mk = block.markdown.replace(/^\* \[x\]/i, '* [ ]')
+      }
+      const timeStr = format(new Date(), 'yyyyMMddhhmmss')
+      editBlockMkAndLogByBlockId(blockId, mk, { time: timeStr, content: logStr }).then(() => {
+        loadTodoListDebounce(navSelected)
+      })
+    })
+  }
+
 </script>
 
 <style lang="css">

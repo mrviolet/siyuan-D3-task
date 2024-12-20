@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-11-26
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-13
+ * @LastEditTime: 2024-12-20
  * @description: 查询 todo 相关的接口，基于 siyuan api 封装 
  */
 import { formatTodo } from "../utils/entityUtil";
@@ -26,7 +26,7 @@ export async function getTodosByBoxid(boxid: string, filter: TodoFilter = { stat
   } else if (filter.state == 'finished') {
     queryTodoSql += " and markdown like '* [x]%'"
   }
-  queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown FROM (${queryTodoSql}) as a LEFT JOIN 
+  queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown, a.created as p_created FROM (${queryTodoSql}) as a LEFT JOIN 
     (SELECT * FROM blocks WHERE type = 'p' GROUP BY parent_id) as b ON a.id = b.parent_id
     ORDER BY a.created`
   const todoRes = await send('sql', { stmt: queryTodoSql });
@@ -48,7 +48,7 @@ export async function getTodosByDocid(docid: string, filter: TodoFilter = { stat
   } else if (filter.state == 'finished') {
     queryTodoSql += " and markdown like '* [x]%'"
   }
-  queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown FROM (${queryTodoSql}) as a LEFT JOIN 
+  queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown, a.created as p_created FROM (${queryTodoSql}) as a LEFT JOIN 
     (SELECT * FROM blocks WHERE type = 'p' GROUP BY parent_id) as b ON a.id = b.parent_id
     ORDER BY a.created`
   const todoRes = await send('sql', { stmt: queryTodoSql });
@@ -70,7 +70,7 @@ export async function getTodayTodo(filter: TodoFilter = { state: 'unfinished' })
   } else if (filter.state == 'finished') {
     queryTodoSql += " and markdown like '* [x]%'"
   }
-  queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown FROM (${queryTodoSql}) as a LEFT JOIN 
+  queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown, a.created as p_created FROM (${queryTodoSql}) as a LEFT JOIN 
     (SELECT * FROM blocks WHERE type = 'p' GROUP BY parent_id) as b ON a.id = b.parent_id
     ORDER BY a.created`
   const todoRes = await send('sql', { stmt: queryTodoSql });
@@ -91,7 +91,7 @@ export async function getTomorrowTodo(filter: TodoFilter = { state: 'unfinished'
   } else if (filter.state == 'finished') {
     queryTodoSql += " and markdown like '* [x]%'"
   }
-  queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown FROM (${queryTodoSql}) as a LEFT JOIN 
+  queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown, a.created as p_created FROM (${queryTodoSql}) as a LEFT JOIN 
     (SELECT * FROM blocks WHERE type = 'p' GROUP BY parent_id) as b ON a.id = b.parent_id
     ORDER BY a.created`
   const todoRes = await send('sql', { stmt: queryTodoSql });
@@ -110,7 +110,7 @@ export async function getAllTodo(filter: TodoFilter = { state: 'unfinished' }) {
   } else if (filter.state == 'finished') {
     queryTodoSql += " and markdown like '* [x]%'"
   }
-  queryTodoSql = `SELECT b.*, a.ial, a.markdown as p_markdown FROM (${queryTodoSql}) as a LEFT JOIN 
+  queryTodoSql = `SELECT b.*, a.ial, a.markdown, a.created as p_created as p_markdown FROM (${queryTodoSql}) as a LEFT JOIN 
     (SELECT * FROM blocks WHERE type = 'p' GROUP BY parent_id) as b ON a.id = b.parent_id
     ORDER BY a.created`
   const todoRes = await send('sql', { stmt: queryTodoSql });

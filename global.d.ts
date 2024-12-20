@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-09-04
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-11
+ * @LastEditTime: 2024-12-20
  * @description: 
  */
 export { };
@@ -24,6 +24,15 @@ declare global {
   }
 
   /**
+   * 时间线实体
+   */
+  interface Timeline {
+    time:string,
+    content: string
+  }
+
+
+  /**
    * 待办事项数据
    */
   interface Todo {
@@ -35,7 +44,8 @@ declare global {
     dom: string,
     pid: string,
     docId: string,
-    pMarkdown: string
+    pMarkdown: string,
+    logs: Timeline[]
   }
 
   /**

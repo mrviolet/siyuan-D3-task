@@ -2,7 +2,7 @@
  * @Author: yl_li
  * @Date: 2024-12-01
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-01
+ * @LastEditTime: 2024-12-20
  * @description: 
  */
 
@@ -23,4 +23,23 @@ function parseIal2JSON(str: string): Record<string, string> {
   return attributes;
 }
 
-export { parseIal2JSON }
+
+
+const domParser = new DOMParser()
+/** 
+ * 解析 HTML 实体编码后的 JSON 
+ */
+function parseHtmlStr(str: string): any {
+  const decodedString = domParser.parseFromString(str, 'text/html').documentElement.textContent;
+  if (decodedString != null) {
+    try {
+      return JSON.parse(decodedString)
+    } catch (error) {
+      return {};
+    }
+  } else {
+    return {};
+  }
+}
+
+export { parseIal2JSON, parseHtmlStr }

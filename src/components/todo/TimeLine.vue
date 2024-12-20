@@ -2,8 +2,8 @@
  * @Author: yl_li
  * @Date: 2024-11-10
  * @LastEditors: yl_li
- * @LastEditTime: 2024-12-11
- * @description: 
+ * @LastEditTime: 2024-12-20
+ * @description: 时间线
 -->
 <template>
   <div class=" overflow-y-auto ">
@@ -23,12 +23,9 @@
 </template>
 
 <script setup lang="ts">
-  const data = [
-    { time: '2024/2/1', 'content': '创建任务' },
-    { time: '2024/4/1', 'content': '调整任务, 设置完成时间为 2024/4/1' },
-    { time: '2024/6/1', 'content': '调整任务, 设置完成时间为 2024/8/1' },
-    { time: '2024/12/1', 'content': '完成任务' }
-  ]
+  defineProps<{
+    data: Timeline[],
+  }>();
 </script>
 
 <style scoped></style>
